@@ -11,75 +11,71 @@
 
 */
 
-//For this project, I am adding a Google data fusion table as another way to bring data into my Google visualization.
-//Here I previously had confused the data object with the Google function name.
-//Now I'm passing the data from the fusion table to the new DataLoaded () function with the name "CivilianUnemploymentData_030714."
+//Add Google data fusion table.
+//Pass the data from the fusion table to the new DataLoaded () function with the name "CivilianUnemploymentData_030714."
+//Changed var names from "myKey" to "newKey" and "myTableURL" to "newTableURL""
 
-var myKey = "&key=AIzaSyBxm3yDApl-FkVRwHUKGACLeBhMMTX2ubI";
-var myTableURL = "https://www.googleapis.com/fusiontables/v1/query?sql=SELECT+*+FROM+1sJdI-HjjB2yBpsxv9rzRjJwP7Y0HJYvkmjklpnDk+WHERE+DATE>";
+var newKey = "&key=AIzaSyBxm3yDApl-FkVRwHUKGACLeBhMMTX2ubI";
+var newTableURL = "https://www.googleapis.com/fusiontables/v1/query?sql=SELECT+*+FROM+1sJdI-HjjB2yBpsxv9rzRjJwP7Y0HJYvkmjklpnDk+WHERE+DATE>";
 
-function newDataLoaded(UNRATE) {
+//Changed function name from "newDataLoaded" to "dataDriver"
+function dataDriver(UNRATE) {
 
-	var googleDataSource = new google.visualization.DataTable();
+	//Changed var "googleDataSource" to "googleInfo"
+	var googleInfo = new google.visualization.DataTable();
 
-	//When I add columns, the first parameter is the data type in that column.
+	//Add columns: The first parameter is the data type in that column.
 	//The second parameter is the name of the column.
 
-	googleDataSource.addColumn('string'), UNRATE.columns[0];
-	googleDataSource.addColumn('number'), UNRATE.columns[1];
-	googleDataSource.addColumn({type: 'string', role:'annotation'});
+	googleInfo.addColumn('string'), UNRATE.columns[0];
+	googleInfo.addColumn('number'), UNRATE.columns[1];
+	googleInfo.addColumn({type:'string', role:'tooltip', 'p': {'html': true}});
+	googleInfo.addRows(UNRATE.rows);
 	
-	//Or add this as the third column:
-	//googleDataSource.addColumn({type:'string', role:'tooltip', 'p': {'html': true}});
-	
-	googleDataSource.addRows(UNRATE.rows);
-	//This only works because it is a Google visualization object.
-	//I'm creating a var for the updated chart and giving it a title.
-
-	var myChartOptions = {
+	//I have changed the var from "myChartOptions" to chartChanges""
+	var chartChanges = {
 		title: "Unemployment in the United States"
 	};
 	
-	// Add this is add googleDataSource 'tooltip' above: 
-	//var chartOptions = {
-		//width:600,
-		//height:400,
-		//tooltip: { isHtml: true}
+	// Add this for googleInfo "tooltip" above: 
+		var ChartOptions = {
+		width:600,
+		height:400,
+		tooltip: { isHtml: true}
 		
-	//};
+	};
 	
-	//Now I'm going to create a line chart. Then I must pass the Google DataTable variable I've created here.
-
-console.log("hi there");
-	var myGoogleChart = new google.visualization.LineChart(document.getElementById("unemploymentChartDiv"));
-	myGoogleChart.draw(googleDataSource);
+	//Create a line chart and pass the Google DataTable variable I've created here.
+	//Changed var "myGoogleChart" to "newChart"
+	var newChart = new google.visualization.LineChart(document.getElementById("unemploymentChartDiv"));
+	newChart.draw(googleInfo);
 
 }
 
 
 function showNewData(e){
-	//e is my click event
+	//e is my click event.
 	var myID = e.target.id; //e.g., "year 2000"
-	var myNameArray = myID.split("_"); //Splits into an array, "2000" will be second item
-	var myYear = myNameArray[1]; //Grab the year
+	var myNameArray = myID.split("_"); //Splits into an array, "2000" will be second item.
+	var myYear = myNameArray[1]; //This grabs the year.
 	
-	$.get(myTableURL+"'"+myYear+"-12-01'"+myKey, newDataLoaded, "json");
-	console.log("hi");
+	$.get(newTableURL+"'"+myYear+"-12-01'"+newKey, dataDriver, "json");
+
 	History.pushState({year:myYear}, "Unemployment from - "+myYear, "?year="+myYear);
 	
 }
 	
-	//Now I'm going to load the data from a Google fusion table instead of from the json file.
-	//I added the data file name and my API key ID to the https address.
-	// Now I'm going to add a WHERE parameter in the https address to specify certain years for the data.
-	// The WHERE parameter will display the chart data for 1969-12-01 and beyond.
+	//Load the data from a Google fusion table instead of from the json file.
+	//Add the data file name and my API key ID to the https address.
+	// Add a WHERE parameter in the https address to specify certain years for the data.
+	// The WHERE parameter will display the chart data for 1949-12-01 and beyond.
 function googleLoaded() {
 	
 	
-
+	//I have changed the "defaultYear" below to 1950 to add data from two more decades to the chart.
 	var urlData = History.getState().cleanUrl;
-	var queryArray = myTableURL.split("?");
-	var defaultYear = "1970";
+	var queryArray = newTableURL.split("?");
+	var defaultYear = "1950";
 	if (queryArray.length > 1){
 		//Get the query string, break it on equals , and then take the right path which contains the year.
 		defaultYear = queryArray[1].split("=")[1];
@@ -90,22 +86,21 @@ function googleLoaded() {
 	//if($.isEmptyObject(urlData)){
 		//defaultYear = "1970";
 				
-	console.log("hi");
-	
+
 	$(".btn-success").on("click", showNewData);
 	
 	//Grab the button with the ID that is year_"defaultYear"
 	
 	$("#year_"+defaultYear).click();
 	
-	$.get(myTableURL+"'1969-12-01'"+myKey, newDataLoaded, "json");
+	$.get(newTableURL+"'1949-12-01'"+newKey, dataDriver, "json");
 
 }
 
-//I am working with the Google chart loading function.
-function DataSource() {
-console.log("hi");
-	//Now I'll load the Google vizualization library.
+	//I am working with the Google chart loading function.
+	function DataSource() {
+
+	//Load the Google vizualization library.
 	google.load("visualization", "1", {
 		packages : ["corechart"],
 		callback : "googleLoaded"
