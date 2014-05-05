@@ -72,7 +72,6 @@ function showInput(e){
 	// Changed the WHERE parameter to display the chart data for 1949-12-01 and beyond.
 	//Changed the function name from "googleLoaded" to "googleReady".
 function googleReady() {
-	
 	//Changed the "defaultYear" below to 1950 to add data for two more decades to the chart.
 	var infoURL = History.getState().cleanUrl; //Changed var "urlData" to "infoURL".
 	var newArray = newTableURL.split("?");//Changed var "queryArray" to "newArray".
@@ -89,7 +88,10 @@ function googleReady() {
 	
 	$("#year_"+newDefaultTime).click();
 	
-	$.get(newTableURL+"'1949-12-01'"+newKey, dataDriver, "json");
+	//I changed the get function below per Susan's instructions, so that when the user first
+	//logs onto the website, he will see only the buttons; then when he clicks on each button, 
+	//get the yesr-specific chart data.
+	$.get(newTableURL+"'"+latestYear+"-12-01'"+newKey, dataDriver, "json"); 
 
 }
 
